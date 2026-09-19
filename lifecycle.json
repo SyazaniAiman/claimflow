@@ -1,0 +1,15 @@
+{
+  "rules": [{
+    "name": "tier-old-claim-documents",
+    "enabled": true,
+    "type": "Lifecycle",
+    "definition": {
+      "filters": { "blobTypes": ["blockBlob"],
+                   "prefixMatch": ["claim-documents/"] },
+      "actions": { "baseBlob": {
+        "tierToCool":    { "daysAfterModificationGreaterThan": 30 },
+        "tierToArchive": { "daysAfterModificationGreaterThan": 365 }
+      }}
+    }
+  }]
+}

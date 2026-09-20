@@ -1,0 +1,2 @@
+azure-functions
+pymssql==2.3.0

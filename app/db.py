@@ -1,11 +1,13 @@
 """Database helpers.  One place that knows how to talk to Azure SQL."""
 import os
-import pymssql
 from contextlib import contextmanager
+
+import pymssql
+
 
 def _settings():
     return dict(
-        server=os.environ["SQL_SERVER"],        # e.g. sql-claimflow-prod.database.windows.net
+        server=os.environ["SQL_SERVER"],  # full Azure SQL host name
         user=os.environ["SQL_USER"],
         password=os.environ["SQL_PASSWORD"],    # read from Key Vault at start-up
         database=os.environ.get("SQL_DATABASE", "sqldb-claims"),

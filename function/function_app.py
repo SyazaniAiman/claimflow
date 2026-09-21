@@ -4,12 +4,16 @@ Runs when a document lands in the claim-documents container.  Reads the claim
 and its policy, applies the same rules as the web app, writes the score and an
 audit row, then stops.  Nothing runs and nothing is billed between claims.
 """
-import os, logging, datetime
+import datetime
+import logging
+import os
+import sys
+
 import azure.functions as func
 import pymssql
-import sys
+
 sys.path.append(os.path.join(os.path.dirname(__file__), "shared"))
-from risk import score_claim          # the identical rules used by the API
+from risk import score_claim  # the identical rules used by the API
 
 app = func.FunctionApp()
 

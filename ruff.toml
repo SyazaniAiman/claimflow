@@ -1,0 +1,7 @@
+# Rule set pinned deliberately: correctness and import hygiene are enforced,
+# stylistic and opinionated rules are not. An unpinned selection means a ruff
+# release can fail the pipeline without any change to this codebase.
+target-version = "py311"
+
+[lint]
+select = ["E", "F", "I", "B"]

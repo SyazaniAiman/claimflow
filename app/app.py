@@ -3,10 +3,13 @@
 Deliberately small.  Everything that makes a decision lives in risk.py so it can
 be tested on its own; everything that touches the database lives in db.py.
 """
-import os, uuid, datetime, logging
-from flask import Flask, request, jsonify, render_template, abort, g
+import datetime
+import logging
+import os
+import uuid
 
 import db
+from flask import Flask, abort, jsonify, render_template, request
 from risk import score_claim
 
 logging.basicConfig(level=logging.INFO)
@@ -34,7 +37,9 @@ def current_user():
 def require(*roles):
     user = current_user()
     if user["role"] not in roles:
-        logging.warning("denied: %s (%s) tried %s", user["name"], user["role"], request.path)
+        logging.warning(
+            "denied: %s (%s) tried %s", user["name"], user["role"], request.path
+        )
         abort(403)
     return user
 

@@ -43,9 +43,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Unit tests with coverage
-        run: |
-          pytest tests -q --cov=app --cov-report=term
-          pytest tests -q --cov=app/risk.py --cov-fail-under=90
+        run: pytest tests -q --cov=app/risk.py --cov-report=term --cov-fail-under=90
 
 # ------------------------------------------------------------- 4-6 build ----
   build:

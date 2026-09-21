@@ -18,3 +18,5 @@ keys/
 *.env
 __pycache__/
 *.pyc
+
+fedcred2.json

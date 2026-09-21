@@ -1,6 +1,7 @@
 # ---- ClaimFlow web portal + API -------------------------------------------
 # Small base image: less software inside means fewer known vulnerabilities.
 FROM python:3.11-slim
+RUN pip install --no-cache-dir --upgrade "setuptools>=80.9.0" "wheel>=0.46.2"
 
 # Do not write .pyc files, do not buffer logs (so they appear immediately).
 ENV PYTHONDONTWRITEBYTECODE=1 \

@@ -44,7 +44,6 @@ jobs:
 
       - name: Unit tests with coverage
         run: pytest tests -q --cov=app --cov-report=term --cov-fail-under=90
---cov=app
 
 # ------------------------------------------------------------- 4-6 build ----
   build:

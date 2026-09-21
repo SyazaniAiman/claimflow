@@ -1,0 +1,4 @@
+[run]
+omit =
+    app/app.py
+    app/db.py

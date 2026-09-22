@@ -20,3 +20,5 @@ __pycache__/
 *.pyc
 
 fedcred2.json
+
+fedcred*.json

@@ -125,39 +125,34 @@ jobs:
           tenant-id:       ${{ secrets.AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Deploy new revision, no traffic yet
+      # Express Container Apps environments run in single-revision mode: no
+      # revision suffixes and no traffic splitting, so blue/green and canary
+      # are unavailable. This is an in-place update with a health check and a
+      # redeploy-the-previous-image rollback. See Section 7.4.
+      - name: Record the currently deployed image for rollback
+        run: |
+          PREV=$(az containerapp show -n $CONTAINER_APP -g $RESOURCE_GROUP \
+                 --query "properties.template.containers[0].image" -o tsv)
+          echo "PREV_IMAGE=$PREV" >> $GITHUB_ENV
+          echo "current image: $PREV"
+
+      - name: Deploy to production
         run: |
           az containerapp update \
             --name $CONTAINER_APP --resource-group $RESOURCE_GROUP \
-            --image $REGISTRY/$IMAGE:${{ needs.build.outputs.tag }} \
-            --revision-suffix r${{ needs.build.outputs.tag }}
-
-      - name: Shift 10 % of traffic and watch
-        run: |
-          NEW=$(az containerapp revision list -n $CONTAINER_APP -g $RESOURCE_GROUP \
-                --query "[?properties.active].name | [-1]" -o tsv)
-          az containerapp ingress traffic set -n $CONTAINER_APP -g $RESOURCE_GROUP \
-            --revision-weight $NEW=10 --label-weight latest=90 || true
-          sleep 60
-
-      - name: Send all traffic to the new revision
-        run: |
-          NEW=$(az containerapp revision list -n $CONTAINER_APP -g $RESOURCE_GROUP \
-                --query "[?properties.active].name | [-1]" -o tsv)
-          az containerapp ingress traffic set -n $CONTAINER_APP -g $RESOURCE_GROUP \
-            --revision-weight $NEW=100
+            --image $REGISTRY/$IMAGE:${{ needs.build.outputs.tag }}
 
       - name: Verify production is healthy, roll back if not
         run: |
           URL="https://$(az containerapp show -n $CONTAINER_APP -g $RESOURCE_GROUP \
                --query properties.configuration.ingress.fqdn -o tsv)"
+          sleep 30
           code=$(curl -s -o /dev/null -w '%{http_code}' "$URL/health")
           if [ "$code" != "200" ]; then
-            echo "health check failed with $code — rolling back"
-            PREV=$(az containerapp revision list -n $CONTAINER_APP -g $RESOURCE_GROUP \
-                   --query "[?properties.active].name | [-2]" -o tsv)
-            az containerapp ingress traffic set -n $CONTAINER_APP -g $RESOURCE_GROUP \
-              --revision-weight $PREV=100
+            echo "health check failed with $code — rolling back to $PREV_IMAGE"
+            az containerapp update \
+              --name $CONTAINER_APP --resource-group $RESOURCE_GROUP \
+              --image "$PREV_IMAGE"
             exit 1
           fi
           echo "production healthy at $URL"

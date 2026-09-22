@@ -1,7 +1,6 @@
 # ClaimFlow — Cloud-Based Insurance Claims Management System
 
 Starter code for the MCD1054 Cloud Computing Management final assessment.
-Follow **Appendix A** of the technical report; it explains every step.
 
     app/         Flask web portal + REST API (containerised)
     function/    Azure Function, blob-triggered claim triage
